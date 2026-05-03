@@ -103,7 +103,7 @@ function App() {
         <nav className="container mx-auto px-4 h-20 flex items-center justify-between">
           <div className="flex items-center gap-12">
             <MagneticButton as="a" href="#" strength={15} className="flex items-center group">
-              <img src="/public/logo.png" alt="Absolute Graphics Co" className="h-16 w-auto transition-transform group-hover:scale-105" />
+              <img src="/logo.png" alt="Absolute Graphics Co" className="h-16 w-auto transition-transform group-hover:scale-105" />
             </MagneticButton>
             <div className="hidden lg:flex items-center gap-8">
               <a href="#" className="nav-link text-sm font-medium">Products</a>
@@ -322,7 +322,7 @@ function App() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
               <div id="steve-portrait" className="relative">
                 <div className="aspect-[4/5] overflow-hidden rounded-sm grayscale hover:grayscale-0 transition-all duration-1000">
-                  <img src="/public/steve.jpg" alt="Steve Harmon" className="w-full h-full object-cover scale-110" />
+                  <img src="/steve.jpg" alt="Steve Harmon" className="w-full h-full object-cover scale-110" />
                 </div>
               </div>
               <div id="steve-content">
@@ -355,7 +355,7 @@ function App() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-24">
             <div className="space-y-8">
-              <img src="/public/logo.png" alt="Absolute Graphics Co" className="h-16 w-auto brightness-0 invert" />
+              <img src="/logo.png" alt="Absolute Graphics Co" className="h-16 w-auto brightness-0 invert" />
               <p className="text-surface/60 text-sm leading-relaxed max-w-xs font-display italic">
                 The gold standard for bands and brands in the Southeast. Printed with pride in Jacksonville, Florida since 1999.
               </p>
