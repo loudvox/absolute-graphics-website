@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absolute Graphics | Bands & Brands Print Here</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- GSAP & Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Lenis for Smooth Scroll -->
+    <script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #121212; --accent: #BC472B; --accent-light: #D97706; --surface: #FDFCF6; --muted: #4B5563;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--surface); color: var(--primary); overflow-x: hidden; }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+
+        /* Custom Cursor */
+        #cursor-dot, #cursor-ring { pointer-events: none; position: fixed; top: 0; left: 0; z-index: 9999; border-radius: 50%; opacity: 0; }
+        #cursor-dot { width: 6px; height: 6px; background: var(--accent); }
+        #cursor-ring { width: 40px; height: 40px; border: 1px solid var(--accent); }
+
+        /* Marquee */
+        .marquee-wrapper { display: flex; overflow: hidden; user-select: none; }
+        .marquee-content { display: flex; flex-shrink: 0; gap: 4rem; padding-right: 4rem; }
+
+        /* Nav Underline */
+        .nav-link { position: relative; }
+        .nav-link::after { content: ''; position: absolute; bottom: -4px; right: 0; width: 0; height: 2px; background: var(--accent); transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+        .nav-link:hover::after { width: 100%; left: 0; right: auto; }
+
+        /* Color Wash */
+        .service-card { position: relative; overflow: hidden; background: white; z-index: 1; }
+        .service-card .wash { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(188,71,43,0.05) 0%, rgba(217,119,6,0.05) 100%); transform: scaleX(0); transform-origin: left; transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); z-index: -1; }
+        .service-card:hover .wash { transform: scaleX(1); }
+
+        /* Image Swap Wipe */
+        .wipe-card .image-2 { clip-path: inset(0 100% 0 0); transition: clip-path 0.5s cubic-bezier(0.77, 0, 0.175, 1); }
+        .wipe-card:hover .image-2 { clip-path: inset(0 0 0 0); }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; animation: none !important; }
+            #cursor-dot, #cursor-ring { display: none; }
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#121212', accent: '#BC472B', 'accent-light': '#D97706', surface: '#FDFCF6', muted: '#4B5563' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Space Grotesk', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="selection:bg-accent/30 selection:text-white">
+
+    <div id="cursor-dot" class="hidden md:block"></div>
+    <div id="cursor-ring" class="hidden md:block"></div>
+
+    <!-- Header -->
+    <header class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-primary/5">
+        <nav class="container mx-auto px-4 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-12">
+                <a href="#" class="flex items-center group magnetic" data-strength="15">
+                    <img src="/public/logo.png" alt="Absolute Graphics Co" class="h-16 w-auto transition-transform group-hover:scale-105">
+                </a>
+                <div class="hidden lg:flex items-center gap-8">
+                    <a href="#" class="nav-link text-sm font-medium">Products</a>
+                    <a href="#" class="nav-link text-sm font-medium">Who It's For</a>
+                    <a href="#work" class="nav-link text-sm font-medium">Portfolio</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex flex-col items-end mr-4">
+                    <span class="text-[10px] uppercase font-bold text-muted">Free local pickup</span>
+                    <a href="tel:9046933191" class="text-sm font-bold flex items-center gap-2 hover:text-accent transition-colors">
+                        <i data-lucide="phone" class="w-4 h-4"></i> (904) 693-3191
+                    </a>
+                </div>
+                <a href="#quote" class="bg-primary text-surface px-6 py-2.5 rounded-sm text-sm font-bold uppercase tracking-wide hover:bg-accent hover:-translate-y-0.5 transition-all magnetic" data-strength="20">
+                    Get a Quote
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero -->
+        <section class="relative min-h-screen flex items-center overflow-hidden bg-primary">
+            <div id="hero-bg" class="absolute inset-0 z-0 scale-110">
+                <img src="https://images.unsplash.com/photo-1541870230289-84275bed0aa7?q=80&w=2000&auto=format&fit=crop" class="w-full h-full object-cover opacity-40 mix-blend-luminosity">
+                <div class="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-transparent"></div>
+            </div>
+            <div class="container mx-auto px-4 relative z-10 pt-20">
+                <div class="max-w-4xl">
+                    <div id="hero-badge" class="inline-block bg-accent px-3 py-1 mb-8">
+                        <span class="text-[11px] font-bold uppercase tracking-widest text-surface font-display">Est. 1999 • Jacksonville, FL</span>
+                    </div>
+                    <h1 id="hero-title" class="text-6xl md:text-8xl lg:text-9xl text-surface mb-8 leading-[0.9] font-display font-black uppercase tracking-tighter overflow-hidden">
+                        <div class="reveal-line">Bands & brands</div>
+                        <div class="reveal-line relative inline-block">
+                            <span class="text-accent italic">print here.</span>
+                            <div id="hero-underline" class="absolute bottom-4 left-0 w-0 h-3 bg-accent-light/30 -z-10"></div>
+                        </div>
+                    </h1>
+                    <p id="hero-desc" class="text-lg md:text-xl text-surface/80 mb-12 max-w-xl leading-relaxed opacity-0">
+                        Custom apparel, embroidery, stickers, and signs — printed with precision in Jacksonville for over 20 years. Free local pickup and national shipping.
+                    </p>
+                    <div id="hero-ctas" class="flex flex-col sm:flex-row gap-6 opacity-0">
+                        <a href="#quote" class="bg-accent text-surface px-10 py-6 rounded-sm font-bold uppercase tracking-widest hover:bg-accent-light transition-all flex items-center justify-center gap-3 group magnetic" data-strength="30">
+                            Get an instant quote <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-2 transition-transform"></i>
+                        </a>
+                        <a href="#work" class="border border-surface/30 text-surface px-10 py-6 rounded-sm font-bold uppercase tracking-widest hover:bg-surface hover:text-primary transition-all flex items-center justify-center">
+                            See our work
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services -->
+        <section class="py-32 bg-surface">
+            <div class="container mx-auto px-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-primary/5 border border-primary/5 shadow-sm">
+                    <div class="service-card p-12 group">
+                        <div class="wash"></div>
+                        <div class="icon-box w-14 h-14 bg-accent/10 flex items-center justify-center mb-10 rounded-sm"><i data-lucide="printer" class="text-accent w-8 h-8"></i></div>
+                        <h3 class="text-2xl font-display uppercase font-bold mb-4">Print</h3>
+                        <p class="text-muted text-sm mb-10 leading-relaxed">World-class screen printing and DTG for t-shirts and hoodies.</p>
+                        <span class="text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 group-hover:text-accent transition-colors">Configure & Price <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></span>
+                    </div>
+                    <div class="service-card p-12 group">
+                        <div class="wash"></div>
+                        <div class="icon-box w-14 h-14 bg-accent/10 flex items-center justify-center mb-10 rounded-sm"><i data-lucide="feather" class="text-accent w-8 h-8"></i></div>
+                        <h3 class="text-2xl font-display uppercase font-bold mb-4">Stitch</h3>
+                        <p class="text-muted text-sm mb-10 leading-relaxed">High-thread-count custom embroidery for headwear and polos.</p>
+                        <span class="text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 group-hover:text-accent transition-colors">Configure & Price <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></span>
+                    </div>
+                    <div class="service-card p-12 group">
+                        <div class="wash"></div>
+                        <div class="icon-box w-14 h-14 bg-accent/10 flex items-center justify-center mb-10 rounded-sm"><i data-lucide="layers" class="text-accent w-8 h-8"></i></div>
+                        <h3 class="text-2xl font-display uppercase font-bold mb-4">Stick</h3>
+                        <p class="text-muted text-sm mb-10 leading-relaxed">Durable die-cut stickers and vinyl decals that last through the tour.</p>
+                        <span class="text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 group-hover:text-accent transition-colors">Configure & Price <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></span>
+                    </div>
+                    <div class="service-card p-12 group">
+                        <div class="wash"></div>
+                        <div class="icon-box w-14 h-14 bg-accent/10 flex items-center justify-center mb-10 rounded-sm"><i data-lucide="monitor" class="text-accent w-8 h-8"></i></div>
+                        <h3 class="text-2xl font-display uppercase font-bold mb-4">Sign</h3>
+                        <p class="text-muted text-sm mb-10 leading-relaxed">Vinyl window signs and large-format graphics that grab attention.</p>
+                        <span class="text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 group-hover:text-accent transition-colors">Configure & Price <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trust Stats -->
+        <section class="bg-primary py-24 overflow-hidden border-y border-white/5">
+            <div class="container mx-auto px-4 mb-20 text-center">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-20">
+                    <div class="stat-item">
+                        <div class="text-7xl md:text-9xl font-display font-black text-white/10 mb-4 flex items-center justify-center">
+                            <span class="count text-accent" data-target="20">0</span><span class="text-accent-light">+</span>
+                        </div>
+                        <p class="text-[11px] uppercase tracking-[0.4em] font-bold text-surface/40">Years in Jacksonville</p>
+                    </div>
+                    <div class="stat-item">
+                        <div class="text-7xl md:text-9xl font-display font-black text-white/10 mb-4 flex items-center justify-center">
+                            <span class="count text-accent" data-target="96">0</span><span class="text-accent-light">%</span>
+                        </div>
+                        <p class="text-[11px] uppercase tracking-[0.4em] font-bold text-surface/40">Customer Recommendation</p>
+                    </div>
+                </div>
+            </div>
+            <div class="marquee-wrapper opacity-30">
+                <div class="marquee-content" id="trust-marquee">
+                    <span class="text-4xl text-surface font-black uppercase tracking-tighter">SCREEN PRINTING</span>
+                    <span class="text-4xl text-accent font-black uppercase tracking-tighter">EMBROIDERY</span>
+                    <span class="text-4xl text-surface font-black uppercase tracking-tighter">STICKERS</span>
+                    <span class="text-4xl text-accent font-black uppercase tracking-tighter">SIGNS</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- For Whom -->
+        <section class="py-32 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="tilt-container">
+                    <!-- Band -->
+                    <div class="wipe-card relative h-[500px] overflow-hidden group">
+                        <img src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=800&fit=crop" class="absolute inset-0 w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1521333249782-fa9bc040c9d7?q=80&w=800&fit=crop" class="image-2 absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-10">
+                            <h3 class="text-3xl text-surface font-display font-black uppercase mb-3">For Bands</h3>
+                            <a href="#" class="inline-flex items-center gap-2 text-accent text-xs font-bold uppercase tracking-widest">See examples <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+                        </div>
+                    </div>
+                    <!-- Brands -->
+                    <div class="wipe-card relative h-[500px] overflow-hidden group">
+                        <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=800&fit=crop" class="absolute inset-0 w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=800&fit=crop" class="image-2 absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-10">
+                            <h3 class="text-3xl text-surface font-display font-black uppercase mb-3">For Brands</h3>
+                            <a href="#" class="inline-flex items-center gap-2 text-accent text-xs font-bold uppercase tracking-widest">See examples <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+                        </div>
+                    </div>
+                    <!-- Schools -->
+                    <div class="wipe-card relative h-[500px] overflow-hidden group">
+                        <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=800&fit=crop" class="absolute inset-0 w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1519766403102-f87c062ce531?q=80&w=800&fit=crop" class="image-2 absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-10">
+                            <h3 class="text-3xl text-surface font-display font-black uppercase mb-3">For Schools</h3>
+                            <a href="#" class="inline-flex items-center gap-2 text-accent text-xs font-bold uppercase tracking-widest">See examples <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+                        </div>
+                    </div>
+                    <!-- Businesses -->
+                    <div class="wipe-card relative h-[500px] overflow-hidden group">
+                        <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=800&fit=crop" class="absolute inset-0 w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&fit=crop" class="image-2 absolute inset-0 w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-10">
+                            <h3 class="text-3xl text-surface font-display font-black uppercase mb-3">For Businesses</h3>
+                            <a href="#" class="inline-flex items-center gap-2 text-accent text-xs font-bold uppercase tracking-widest">See examples <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portfolio Gallery -->
+        <section id="work" class="py-32 bg-primary overflow-hidden">
+            <div class="container mx-auto px-4 mb-16"><h2 class="text-4xl text-surface font-display font-black uppercase tracking-tighter">The Gallery</h2></div>
+            <div class="marquee-wrapper mb-8" id="gallery-1">
+                <div class="marquee-content gap-4 pr-4">
+                    <img src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=400&fit=crop" class="w-80 aspect-square object-cover rounded-sm grayscale hover:grayscale-0 transition-all">
+                    <img src="https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=400&fit=crop" class="w-80 aspect-square object-cover rounded-sm grayscale hover:grayscale-0 transition-all">
+                    <img src="https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?q=80&w=400&fit=crop" class="w-80 aspect-square object-cover rounded-sm grayscale hover:grayscale-0 transition-all">
+                    <img src="https://images.unsplash.com/photo-1598257006458-087169a1f08d?q=80&w=400&fit=crop" class="w-80 aspect-square object-cover rounded-sm grayscale hover:grayscale-0 transition-all">
+                </div>
+            </div>
+            <div class="marquee-wrapper" id="gallery-2">
+                <div class="marquee-content gap-4 pr-4">
+                    <img src="https://images.unsplash.com/photo-1621607512214-68297480165e?q=80&w=400&fit=crop" class="w-80 aspect-square object-cover rounded-sm grayscale hover:grayscale-0 transition-all">
+                    <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=400&fit=crop" class="w-80 aspect-square object-cover rounded-sm grayscale hover:grayscale-0 transition-all">
+                    <img src="https://images.unsplash.com/photo-1603344040663-12886f78713d?q=80&w=400&fit=crop" class="w-80 aspect-square object-cover rounded-sm grayscale hover:grayscale-0 transition-all">
+                    <img src="https://images.unsplash.com/photo-1613915611249-039f1e46f11c?q=80&w=400&fit=crop" class="w-80 aspect-square object-cover rounded-sm grayscale hover:grayscale-0 transition-all">
+                </div>
+            </div>
+        </section>
+
+        <!-- Meet Steve -->
+        <section class="py-40">
+            <div class="container mx-auto px-4">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
+                    <div id="steve-portrait" class="relative">
+                        <div class="aspect-[4/5] overflow-hidden rounded-sm grayscale hover:grayscale-0 transition-all duration-1000">
+                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover scale-110">
+                        </div>
+                    </div>
+                    <div id="steve-content">
+                        <h4 class="text-accent text-[11px] font-bold uppercase tracking-[0.4em] mb-8">Locally Owned</h4>
+                        <h2 class="text-6xl md:text-7xl font-display font-black uppercase tracking-tighter mb-12 italic">Meet Steve & the Crew</h2>
+                        <div class="space-y-8">
+                            <p id="steve-quote" class="text-3xl font-display font-bold text-primary italic leading-tight">"Twenty years in, we still treat every job like it's our first."</p>
+                            <p class="text-muted leading-relaxed text-lg max-w-lg">Absolute Graphics isn't just a business; it's a staple of the Jax creative community. We've grown from a single manual press to a powerhouse shop shipping nationwide.</p>
+                        </div>
+                        <div class="mt-16 flex items-center gap-6"><div class="w-16 h-[2px] bg-accent"></div><span class="text-sm font-bold uppercase tracking-[0.2em] text-primary">Steve Harmon, Owner</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA -->
+        <section id="quote" class="py-40 bg-primary relative overflow-hidden">
+            <div id="cta-glow" class="absolute inset-0 bg-gradient-to-br from-accent/20 via-transparent to-accent-light/10"></div>
+            <div class="container mx-auto px-4 relative z-10 text-center">
+                <h2 class="text-6xl md:text-9xl text-surface font-display font-black uppercase tracking-tighter mb-12 leading-none">Ready to <br><span class="text-accent italic">print?</span></h2>
+                <p class="text-surface/50 text-2xl max-w-2xl mx-auto mb-16">Get an instant quote in under <span id="wink-timer" class="text-surface font-mono font-bold">60</span> seconds.</p>
+                <a href="#" class="inline-block bg-accent text-surface px-16 py-8 rounded-sm text-xl font-black uppercase tracking-[0.25em] hover:bg-accent-light transition-all magnetic shadow-2xl" data-strength="40">Get a Quote Now</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-surface py-24 border-t border-primary/5">
+        <div class="container mx-auto px-4 text-center">
+            <div class="mb-16">
+                <img src="/public/logo.png" alt="Absolute Graphics Co" class="h-16 w-auto mx-auto mb-10">
+                <p class="text-sm text-muted max-w-md mx-auto italic font-display leading-relaxed">Jacksonville's Best Since 1999.</p>
+            </div>
+            <p class="text-[10px] font-bold uppercase tracking-widest text-muted">© 2026 Absolute Graphics Jax, LLC.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            gsap.registerPlugin(ScrollTrigger);
+
+            const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+            function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+            requestAnimationFrame(raf);
+
+            const dot = document.getElementById('cursor-dot'); const ring = document.getElementById('cursor-ring');
+            gsap.set([dot, ring], { xPercent: -50, yPercent: -50 });
+            window.addEventListener('mousemove', e => { gsap.to(dot, { x: e.clientX, y: e.clientY, duration: 0, opacity: 1 }); gsap.to(ring, { x: e.clientX, y: e.clientY, duration: 0.15, opacity: 1 }); });
+
+            document.querySelectorAll('.magnetic').forEach(btn => {
+                btn.addEventListener('mousemove', e => {
+                    const rect = btn.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2; const y = e.clientY - rect.top - rect.height / 2;
+                    const s = btn.dataset.strength || 20; gsap.to(btn, { x: x * s / rect.width, y: y * s / rect.height, duration: 0.3 });
+                });
+                btn.addEventListener('mouseleave', () => gsap.to(btn, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1, 0.3)" }));
+            });
+
+            const heroTl = gsap.timeline();
+            heroTl.from('.reveal-line', { yPercent: 100, duration: 1, stagger: 0.2, ease: "expo.out" });
+            heroTl.to('#hero-underline', { width: "100%", duration: 0.8, ease: "power2.inOut" }, "-=0.3");
+            heroTl.to('#hero-bg', { scale: 1, duration: 2.5, ease: "power2.out" }, 0);
+            heroTl.to(['#hero-desc', '#hero-ctas'], { opacity: 1, y: -20, duration: 1, stagger: 0.1 }, "-=0.5");
+
+            gsap.to('#hero-bg', { yPercent: 30, scrollTrigger: { trigger: 'section', start: 'top top', end: 'bottom top', scrub: true } });
+
+            gsap.utils.toArray('.count').forEach(counter => {
+                gsap.from(counter, { innerText: 0, duration: 2, ease: "power2.out", scrollTrigger: { trigger: counter, start: "top 90%" }, snap: { innerText: 1 } });
+            });
+
+            gsap.from(gsap.utils.toArray('.service-card'), { y: 60, opacity: 0, duration: 0.8, stagger: 0.1, ease: "power2.out", scrollTrigger: { trigger: '.service-card', start: "top 85%" } });
+
+            document.querySelectorAll('.wipe-card').forEach(card => {
+                gsap.set(card, { perspective: 1000 });
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5; const y = (e.clientY - rect.top) / rect.height - 0.5;
+                    gsap.to(card, { rotationY: x * 10, rotationX: -y * 10, duration: 0.5, ease: "power2.out" });
+                });
+                card.addEventListener('mouseleave', () => gsap.to(card, { rotationY: 0, rotationX: 0, duration: 0.5 }));
+            });
+
+            [document.getElementById('gallery-1'), document.getElementById('gallery-2'), document.getElementById('trust-marquee')].forEach(m => {
+                const content = m.querySelector('.marquee-content');
+                if(!content) return;
+                for(let i=0; i<3; i++) m.appendChild(content.cloneNode(true));
+            });
+            gsap.to('#gallery-1 .marquee-content', { xPercent: -100, repeat: -1, duration: 30, ease: "none" });
+            gsap.to('#gallery-2 .marquee-content', { xPercent: 100, repeat: -1, duration: 30, ease: "none", startAt: { xPercent: -100 } });
+            gsap.to('#trust-marquee .marquee-content', { xPercent: -100, repeat: -1, duration: 40, ease: "none" });
+
+            gsap.from('#steve-portrait', { x: -100, opacity: 0, duration: 1.5, scrollTrigger: { trigger: '#steve-portrait', start: "top 70%" } });
+            gsap.from('#steve-content', { x: 50, opacity: 0, duration: 1.2, scrollTrigger: { trigger: '#steve-content', start: "top 70%" } });
+
+            let timeLeft = 60; setInterval(() => { timeLeft = timeLeft <= 1 ? 60 : timeLeft - 1; document.getElementById('wink-timer').innerText = timeLeft; }, 1000);
+        });
+    </script>
+</body>
+</html>
